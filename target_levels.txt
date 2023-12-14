@@ -1,0 +1,5 @@
+Spirit Calibur:Skill
+HEXA Raging Blow:Mastery
+Burning Soul Blade:Enhancement
+Instinctual Combo:Enhancement
+Sword Illusion:Enhancement
