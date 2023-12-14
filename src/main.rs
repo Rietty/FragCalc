@@ -48,7 +48,7 @@ fn main() {
     ];
 
     // Read a vector of pairs from a file.
-    let pairs = read_file("target_levels.txt".to_string());
+    let pairs = read_file("C:\\Users\\Rietty\\Documents\\Projects\\FragCalc\\target_levels.txt".to_string());
 
     // For each pair, calculate the total fragments needed, and how many I have already used.
     // We can do this by asking for pair's skill the level, and then using that to calculate the total fragments needed and how many I have already used.
@@ -68,18 +68,21 @@ fn main() {
             .parse()
             .expect("Please enter a number");
 
-        let (fragments_vector, fragments_needed) = match core {
+        let (fragments_vector, fragments_needed, skill_total_fragments_needed) = match core {
             Core::Skill => (
                 &skill_core_fragments,
                 skill_core_fragments.iter().sum::<i32>() - skill_core_fragments[current_level as usize - 1],
+                skill_core_fragments.iter().sum::<i32>()
             ),
             Core::Mastery => (
                 &mastery_core_fragments,
                 mastery_core_fragments.iter().sum::<i32>() - mastery_core_fragments[current_level as usize - 1],
+                mastery_core_fragments.iter().sum::<i32>()
             ),
             Core::Enhancement => (
                 &enhancement_core_fragments,
                 enhancement_core_fragments.iter().sum::<i32>() - enhancement_core_fragments[current_level as usize - 1],
+                enhancement_core_fragments.iter().sum::<i32>()
             ),
         };
 
@@ -90,7 +93,7 @@ fn main() {
             name, fragments_needed, fragments_used
         ));
 
-        total_fragments_needed += fragments_needed;
+        total_fragments_needed += skill_total_fragments_needed;
         total_fragments_used += fragments_used;
     }
 
