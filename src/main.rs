@@ -1,6 +1,9 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader};
 use std::io;
+
+#[macro_use] extern crate prettytable;
+use prettytable::Table;
 
 // This program will calculate the fragments needed for a given set of levels, and how many I have already used.
 // As well as percentages done overall.
@@ -50,65 +53,40 @@ fn main() {
     // Read a vector of pairs from a file.
     let pairs = read_file("C:\\Users\\Rietty\\Documents\\Projects\\FragCalc\\target_levels.txt".to_string());
 
-    // For each pair, calculate the total fragments needed, and how many I have already used.
-    // We can do this by asking for pair's skill the level, and then using that to calculate the total fragments needed and how many I have already used.
-    let mut total_fragments_needed = 0;
-    let mut total_fragments_used = 0;
+    // Create a table that will print the name of the skill, type of core, the fragments needed to max it (sum of the vector).
+    let mut table = Table::new();
 
-    let mut res: Vec<String> = Vec::new();
+    table.add_row(row!["Name", "Type", "Fragments Needed", "Fragments Used", "Percentage Done"]);
 
     for (name, core) in pairs {
-        print!("Enter current level for {}: ", name);
-        io::stdout().flush().unwrap();
-        let mut current_level_str = String::new();
-        io::stdin().read_line(&mut current_level_str).unwrap();
-
-        let current_level: usize = current_level_str
-            .trim()
-            .parse()
-            .expect("Please enter a number");
-
-        let (fragments_vector, fragments_needed, skill_total_fragments_needed) = match core {
-            Core::Skill => (
-                &skill_core_fragments,
-                skill_core_fragments.iter().sum::<i32>() - skill_core_fragments[current_level as usize - 1],
-                skill_core_fragments.iter().sum::<i32>()
-            ),
-            Core::Mastery => (
-                &mastery_core_fragments,
-                mastery_core_fragments.iter().sum::<i32>() - mastery_core_fragments[current_level as usize - 1],
-                mastery_core_fragments.iter().sum::<i32>()
-            ),
-            Core::Enhancement => (
-                &enhancement_core_fragments,
-                enhancement_core_fragments.iter().sum::<i32>() - enhancement_core_fragments[current_level as usize - 1],
-                enhancement_core_fragments.iter().sum::<i32>()
-            ),
+        let fragments: usize = match core {
+            Core::Skill => skill_core_fragments.iter().sum(),
+            Core::Mastery => mastery_core_fragments.iter().sum(),
+            Core::Enhancement => enhancement_core_fragments.iter().sum(),
         };
 
-        let fragments_used: i32 = fragments_vector[..current_level].iter().sum();
+        // Get the current level of the skill, and calculate the fragments used.
+        // For example if it is level 5 and enhancement, it will use enhancement_core_fragments[0..5].iter().sum()
+        let fragments_used: usize;
+        let mut level = String::new();
+        println!("What level is {}?", name);
+        io::stdin().read_line(&mut level).unwrap();
+        let level: usize = level.trim().parse().unwrap();
+        match core {
+            Core::Skill => {
+                fragments_used = skill_core_fragments[0..level].iter().sum();
+            }
+            Core::Mastery => {
+                fragments_used = mastery_core_fragments[0..level].iter().sum();
+            }
+            Core::Enhancement => {
+                fragments_used = enhancement_core_fragments[0..level].iter().sum();
+            }
+        }
 
-        res.push(format!(
-            "{}: Total Needed: {}, Used: {}",
-            name, fragments_needed, fragments_used
-        ));
-
-        total_fragments_needed += skill_total_fragments_needed;
-        total_fragments_used += fragments_used;
+        table.add_row(row![name, format!("{:?}", core), fragments, fragments_used, format!("{:.2}%", (fragments_used as f64 / fragments as f64) * 100.0)]);
     }
 
-    let percentage_done = (total_fragments_used as f32 / total_fragments_needed as f32) * 100.0;
-
-    // Empty line.
-    println!();
-
-    // Print the results.
-    for i in res {
-        println!("{}", i);
-    }
-
-    println!(
-        "Overall: Total Needed: {}, Used: {}, Completion: {:.2}%",
-        total_fragments_needed, total_fragments_used, percentage_done
-    );
+    // Print the table.
+    table.printstd();
 }
