@@ -1,5 +1,6 @@
-Spirit Calibur:Skill
-HEXA Raging Blow:Mastery
-Burning Soul Blade:Enhancement
-Instinctual Combo:Enhancement
-Sword Illusion:Enhancement
+Origin Name:Skill
+HEXA Skill Name:Mastery
+Boost Node:Enhancement
+Boost Node:Enhancement
+Boost Node:Enhancement
+Boost Node:Enhancement
