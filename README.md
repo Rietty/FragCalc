@@ -17,6 +17,8 @@ Example table output:
 +--------------------+-------------+------------------+----------------+-----------------+
 | Sword Illusion     | Enhancement | 3383             | 513            | 15.16%          |
 +--------------------+-------------+------------------+----------------+-----------------+
+| Total              |             | 16801            | 7105           | 42.29%          |
++--------------------+-------------+------------------+----------------+-----------------+
 ```
 
 Users can build themselves using `cargo build --release` or simply download the attached `zip` file in the release section.
