@@ -1,8 +1,11 @@
+use std::env;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
 use std::io;
+use std::io::{BufRead, BufReader};
+use std::path::PathBuf;
 
-#[macro_use] extern crate prettytable;
+#[macro_use]
+extern crate prettytable;
 use prettytable::Table;
 
 // This program will calculate the fragments needed for a given set of levels, and how many I have already used.
@@ -35,6 +38,14 @@ fn read_file(path: String) -> Vec<(String, Core)> {
     pairs
 }
 
+fn get_current_working_dir() -> std::io::Result<PathBuf> {
+    // Get the current_exe path, remove the file name at the end, and return the path.
+    env::current_exe().map(|mut path| {
+        path.pop();
+        path
+    })
+}
+
 fn main() {
     // Create a vector that will lisst required fragments for each level.
     let skill_core_fragments = vec![
@@ -50,13 +61,20 @@ fn main() {
         135, 143, 150, 158, 165, 173, 180, 188, 375,
     ];
 
-    // Read a vector of pairs from a file.
-    let pairs = read_file("C:\\Users\\Rietty\\Documents\\Projects\\FragCalc\\target_levels.txt".to_string());
+    // Read a vector of pairs from a file called "skills.txt" from the directory where the executable is.
+    let skills_path = get_current_working_dir().unwrap().join("skills.txt");
+    let pairs = read_file(skills_path.to_str().unwrap().to_string());
 
     // Create a table that will print the name of the skill, type of core, the fragments needed to max it (sum of the vector).
     let mut table = Table::new();
 
-    table.add_row(row!["Name", "Type", "Fragments Needed", "Fragments Used", "Percentage Done"]);
+    table.add_row(row![
+        "Name",
+        "Type",
+        "Fragments Needed",
+        "Fragments Used",
+        "Percentage Done"
+    ]);
 
     for (name, core) in pairs {
         let fragments: usize = match core {
@@ -84,7 +102,13 @@ fn main() {
             }
         }
 
-        table.add_row(row![name, format!("{:?}", core), fragments, fragments_used, format!("{:.2}%", (fragments_used as f64 / fragments as f64) * 100.0)]);
+        table.add_row(row![
+            name,
+            format!("{:?}", core),
+            fragments,
+            fragments_used,
+            format!("{:.2}%", (fragments_used as f64 / fragments as f64) * 100.0)
+        ]);
     }
 
     // Print the table.
