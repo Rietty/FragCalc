@@ -76,6 +76,9 @@ fn main() {
         "Percentage Done"
     ]);
 
+    let mut total_fragments = 0;
+    let mut total_fragments_used = 0;
+
     for (name, core) in pairs {
         let fragments: usize = match core {
             Core::Skill => skill_core_fragments.iter().sum(),
@@ -102,6 +105,9 @@ fn main() {
             }
         }
 
+        total_fragments += fragments;
+        total_fragments_used += fragments_used;
+
         table.add_row(row![
             name,
             format!("{:?}", core),
@@ -110,6 +116,17 @@ fn main() {
             format!("{:.2}%", (fragments_used as f64 / fragments as f64) * 100.0)
         ]);
     }
+
+    table.add_row(row![
+        "Total",
+        "",
+        total_fragments,
+        total_fragments_used,
+        format!(
+            "{:.2}%",
+            (total_fragments_used as f64 / total_fragments as f64) * 100.0
+        )
+    ]);
 
     // Print the table.
     table.printstd();
